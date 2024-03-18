@@ -1,3 +1,4 @@
+import { Commnet } from "./Comment";
 import styles from "./Post.module.css";
 export function Post() {
   return (
@@ -25,13 +26,27 @@ export function Post() {
           criar todo o design e codar na unha, mas consegui 💪🏻
         </p>
         <p></p>
+        <p>Acesse e deixe seu feedback </p>
         <p>
-          Acesse e deixe seu feedback 👉 <a href="#"> devonlane.design</a>
+          👉 <a href="#"> devonlane.design</a>
         </p>
         <p></p>
         <p>
-          <a href="#">#uiux #userexperience</a>
+          <a href="#">#uiux</a> <a href="#"> #userexperience</a>
         </p>
+      </div>
+
+      <form className={styles.commentForm}>
+        <strong>Deixe seu feedback</strong>
+        <textarea placeholder="Deixe um comentário" />
+        <footer>
+          <button type="submit">Publicar</button>
+        </footer>
+      </form>
+      <div className={styles.commnetList}>
+        <Commnet />
+        <Commnet />
+        <Commnet />
       </div>
     </article>
   );
