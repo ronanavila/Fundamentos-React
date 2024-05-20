@@ -1,52 +1,108 @@
-import { Commnet } from "./Comment";
+import { format, formatDistanceToNow } from "date-fns";
+import { ptBR } from "date-fns/locale/pt-BR";
+import { Avatar } from "./Avatar";
+import { Comment } from "./Comment";
 import styles from "./Post.module.css";
-export function Post() {
+import { useState } from "react";
+
+export function Post({ author, publishedAt, content }) {
+  const [comments, setComments] = useState(["Batman Banana , pasou aqui."]);
+  const [newCommentText, setNewCommentText] = useState("");
+
+  const publishedDateFormatted = format(
+    publishedAt,
+    "dd 'de' LLLL 'às' HH:mmh",
+    { ptBR }
+  );
+
+  const publishedRelativeToNow = formatDistanceToNow(publishedAt, {
+    locale: ptBR,
+    addSuffix: true,
+  });
+
+  function handleCreateNewComment() {
+    event.preventDefault();
+
+    setComments([...comments, newCommentText]);
+
+    setNewCommentText("");
+  }
+
+  function handleNewCommnetChange() {
+    event.target.setCustomValidity("");
+    setNewCommentText(event.target.value);
+  }
+
+  function deleteComment(commentToDelete) {
+    const commentsWithoutDeletedOne = comments.filter((comment) => {
+      return comment !== commentToDelete;
+    });
+    setComments(commentsWithoutDeletedOne);
+  }
+
+  function handleNewCommentInvalid() {
+    event.target.setCustomValidity("Este campo é obrigatório");
+  }
+  const isNewCommentEmpty = newCommentText.length === 0;
+
   return (
     <article className={styles.post}>
       <header>
         <div className={styles.author}>
-          <img
-            className={styles.avatar}
-            src="https://avatars.githubusercontent.com/u/46966269?v=4"
-          />
+          <Avatar src={author.avatarUrl} />
           <div className={styles.authorInfo}>
-            <strong>Batman da Silva</strong>
-            <span>Web Morcego</span>
+            <strong>{author.name}</strong>
+            <span>{author.role}</span>
           </div>
         </div>
-        <time title="11 de maio ás 08:13" dateTime="2022-05-11 08:13:30">
-          Publicado há 1hr
+        <time
+          title={publishedDateFormatted}
+          dateTime={publishedAt.toISOString()}
+        >
+          {publishedRelativeToNow}
         </time>
       </header>
       <div className={styles.content}>
-        <p> Fala pessoal 👋</p>
-        <p></p>
-        <p>
-          Finalmente finalizei meu novo site/portfólio. Foi um baita desafio
-          criar todo o design e codar na unha, mas consegui 💪🏻
-        </p>
-        <p></p>
-        <p>Acesse e deixe seu feedback </p>
-        <p>
-          👉 <a href="#"> devonlane.design</a>
-        </p>
-        <p></p>
-        <p>
-          <a href="#">#uiux</a> <a href="#"> #userexperience</a>
-        </p>
+        {content.map((line) => {
+          if (line.type === "paragraph") {
+            return <p key={line.content}>{line.content}</p>;
+          }
+          if (line.type === "link") {
+            return (
+              <p key={line.content}>
+                <a href="#">{line.content}</a>
+              </p>
+            );
+          }
+        })}
       </div>
 
-      <form className={styles.commentForm}>
+      <form onSubmit={handleCreateNewComment} className={styles.commentForm}>
         <strong>Deixe seu feedback</strong>
-        <textarea placeholder="Deixe um comentário" />
+        <textarea
+          required
+          onInvalid={handleNewCommentInvalid}
+          value={newCommentText}
+          onChange={handleNewCommnetChange}
+          name="comment"
+          placeholder="Deixe um comentário"
+        />
         <footer>
-          <button type="submit">Publicar</button>
+          <button disabled={isNewCommentEmpty} type="submit">
+            Publicar
+          </button>
         </footer>
       </form>
       <div className={styles.commnetList}>
-        <Commnet />
-        <Commnet />
-        <Commnet />
+        {comments.map((comment) => {
+          return (
+            <Comment
+              key={comment}
+              content={comment}
+              onDeleteComment={deleteComment}
+            />
+          );
+        })}
       </div>
     </article>
   );

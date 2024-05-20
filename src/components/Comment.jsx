@@ -1,11 +1,36 @@
 import { ThumbsUp, Trash } from "phosphor-react";
 import styles from "./Comment.module.css";
-export function Commnet() {
+import { Avatar } from "./Avatar";
+import { useState } from "react";
+
+export function Comment({ content, onDeleteComment }) {
+  const [likeCount, setLikeCount] = useState(0);
+
+  function handleDeleteComment() {
+    onDeleteComment(content);
+  }
+
+  function handleLikeCommnet() {
+    // nao tras o valor atualizado dentro do escopo, somente apos execucao
+    //setLikeCount(likeCount + 1);
+
+    // tras o valor atualizado logo apos alteracao
+    // const newLikeCount = likeCount + 1;
+    // setLikeCount(newLikeCount);
+
+    // tras o valor atualizado logo apos alteracao
+    setLikeCount((state) => {
+      return state + 1;
+    });
+  }
   return (
     <div className={styles.comment}>
-      <img src="https://avatars.githubusercontent.com/u/46966269?v=4"></img>
+      <Avatar
+        hasBorder={false}
+        src="https://avatars.githubusercontent.com/u/46966269?v=4"
+      />
       <div className={styles.commentBox}>
-        <div className={styles.commnetContent}>
+        <div className={styles.commentContent}>
           <header>
             <div className={styles.authorAndTime}>
               <strong>Batman Silva</strong>
@@ -13,16 +38,16 @@ export function Commnet() {
                 Cerca há 1hr atrás
               </time>
             </div>
-            <button title="Deletar comentário">
-              <Trash size={20} />
+            <button onClick={handleDeleteComment} title="Deletar comentário">
+              <Trash size={24} />
             </button>
           </header>
-          <p>ADSASFAFSAGGSGSDG</p>
+          <p>{content}</p>
         </div>
         <footer>
-          <button title="Deletar comentário">
+          <button onClick={handleLikeCommnet} title="Deletar comentário">
             <ThumbsUp size={20} />
-            Aplaudir <span>20</span>
+            Aplaudir <span>{likeCount}</span>
           </button>
         </footer>
       </div>
